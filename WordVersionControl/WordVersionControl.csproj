@@ -185,9 +185,12 @@
     can be found.
   -->
   <ItemGroup>
+    <Compile Include="GitOps.cs" />
+    <Compile Include="Models.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Utils.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -196,6 +199,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="Ribbon1.resx">
       <DependentUpon>Ribbon1.cs</DependentUpon>
@@ -225,6 +229,33 @@
     </Compile>
     <AppDesigner Include="Properties\" />
     <None Include="WordVersionControl_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com %283%29.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com %282%29.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com %284%29.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com %285%29.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com %283%29 %281%29.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com %282%29 %281%29.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com %284%29 %281%29.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com %285%29 %281%29.jpg" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

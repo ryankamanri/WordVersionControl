@@ -34,67 +34,120 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.tab1 = this.Factory.CreateRibbonTab();
-			this.group1 = this.Factory.CreateRibbonGroup();
-			this.btnSaveCommit = this.Factory.CreateRibbonButton();
-			this.btnShowLog = this.Factory.CreateRibbonButton();
-			this.btnCompare = this.Factory.CreateRibbonButton();
-			this.tab1.SuspendLayout();
-			this.group1.SuspendLayout();
+			this.operation_tab = this.Factory.CreateRibbonTab();
+			this.group_history = this.Factory.CreateRibbonGroup();
+			this.btn_show_history = this.Factory.CreateRibbonButton();
+			this.group_compare = this.Factory.CreateRibbonGroup();
+			this.btn_compare = this.Factory.CreateRibbonButton();
+			this.group_commit = this.Factory.CreateRibbonGroup();
+			this.btn_save_commit = this.Factory.CreateRibbonButton();
+			this.group_autosave = this.Factory.CreateRibbonGroup();
+			this.btn_autosave = this.Factory.CreateRibbonButton();
+			this.operation_tab.SuspendLayout();
+			this.group_history.SuspendLayout();
+			this.group_compare.SuspendLayout();
+			this.group_commit.SuspendLayout();
+			this.group_autosave.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// tab1
+			// operation_tab
 			// 
-			this.tab1.Groups.Add(this.group1);
-			this.tab1.Label = "版本控制";
-			this.tab1.Name = "tab1";
+			this.operation_tab.Groups.Add(this.group_history);
+			this.operation_tab.Groups.Add(this.group_compare);
+			this.operation_tab.Groups.Add(this.group_commit);
+			this.operation_tab.Groups.Add(this.group_autosave);
+			this.operation_tab.Label = "版本控制";
+			this.operation_tab.Name = "operation_tab";
 			// 
-			// group1
+			// group_history
 			// 
-			this.group1.Items.Add(this.btnSaveCommit);
-			this.group1.Items.Add(this.btnShowLog);
-			this.group1.Items.Add(this.btnCompare);
-			this.group1.Label = "操作";
-			this.group1.Name = "group1";
+			this.group_history.Items.Add(this.btn_show_history);
+			this.group_history.Label = "历史记录";
+			this.group_history.Name = "group_history";
 			// 
-			// btnSaveCommit
+			// btn_show_history
 			// 
-			this.btnSaveCommit.Label = "保存并提交";
-			this.btnSaveCommit.Name = "btnSaveCommit";
-			this.btnSaveCommit.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.BtnSaveCommit_Click);
+			this.btn_show_history.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+			this.btn_show_history.Image = global::WordVersionControl.Properties.Resources.扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com__3___1_;
+			this.btn_show_history.Label = "查看历史";
+			this.btn_show_history.Name = "btn_show_history";
+			this.btn_show_history.ShowImage = true;
+			this.btn_show_history.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.BtnShowLog_Click);
 			// 
-			// btnShowLog
+			// group_compare
 			// 
-			this.btnShowLog.Label = "查看历史";
-			this.btnShowLog.Name = "btnShowLog";
-			this.btnShowLog.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.BtnShowLog_Click);
+			this.group_compare.Items.Add(this.btn_compare);
+			this.group_compare.Label = "比较";
+			this.group_compare.Name = "group_compare";
 			// 
-			// btnCompare
+			// btn_compare
 			// 
-			this.btnCompare.Label = "比较最近两次";
-			this.btnCompare.Name = "btnCompare";
-			this.btnCompare.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.BtnCompare_Click);
+			this.btn_compare.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+			this.btn_compare.Image = global::WordVersionControl.Properties.Resources.扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com__2___1_;
+			this.btn_compare.Label = "文档比较";
+			this.btn_compare.Name = "btn_compare";
+			this.btn_compare.ShowImage = true;
+			this.btn_compare.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.BtnCompare_Click);
+			// 
+			// group_commit
+			// 
+			this.group_commit.Items.Add(this.btn_save_commit);
+			this.group_commit.Label = "提交";
+			this.group_commit.Name = "group_commit";
+			// 
+			// btn_save_commit
+			// 
+			this.btn_save_commit.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+			this.btn_save_commit.Image = global::WordVersionControl.Properties.Resources.扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com__4___1_;
+			this.btn_save_commit.Label = "提交变更";
+			this.btn_save_commit.Name = "btn_save_commit";
+			this.btn_save_commit.ShowImage = true;
+			this.btn_save_commit.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.BtnSaveCommit_Click);
+			// 
+			// group_autosave
+			// 
+			this.group_autosave.Items.Add(this.btn_autosave);
+			this.group_autosave.Label = "自动保存";
+			this.group_autosave.Name = "group_autosave";
+			// 
+			// btn_autosave
+			// 
+			this.btn_autosave.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+			this.btn_autosave.Image = global::WordVersionControl.Properties.Resources.扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com__5___1_;
+			this.btn_autosave.Label = "自动保存";
+			this.btn_autosave.Name = "btn_autosave";
+			this.btn_autosave.ShowImage = true;
 			// 
 			// Ribbon1
 			// 
 			this.Name = "Ribbon1";
 			this.RibbonType = "Microsoft.Word.Document";
-			this.Tabs.Add(this.tab1);
-			this.tab1.ResumeLayout(false);
-			this.tab1.PerformLayout();
-			this.group1.ResumeLayout(false);
-			this.group1.PerformLayout();
+			this.Tabs.Add(this.operation_tab);
+			this.operation_tab.ResumeLayout(false);
+			this.operation_tab.PerformLayout();
+			this.group_history.ResumeLayout(false);
+			this.group_history.PerformLayout();
+			this.group_compare.ResumeLayout(false);
+			this.group_compare.PerformLayout();
+			this.group_commit.ResumeLayout(false);
+			this.group_commit.PerformLayout();
+			this.group_autosave.ResumeLayout(false);
+			this.group_autosave.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
 
-		private Microsoft.Office.Tools.Ribbon.RibbonTab tab1;
-		private Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
-		private Microsoft.Office.Tools.Ribbon.RibbonButton btnSaveCommit;
-		private Microsoft.Office.Tools.Ribbon.RibbonButton btnShowLog;
-		private Microsoft.Office.Tools.Ribbon.RibbonButton btnCompare;
+		private Microsoft.Office.Tools.Ribbon.RibbonTab operation_tab;
+		private Microsoft.Office.Tools.Ribbon.RibbonGroup group_history;
+		private Microsoft.Office.Tools.Ribbon.RibbonGroup group_compare;
+		private Microsoft.Office.Tools.Ribbon.RibbonGroup group_commit;
+		private Microsoft.Office.Tools.Ribbon.RibbonGroup group_autosave;
+		private Microsoft.Office.Tools.Ribbon.RibbonButton btn_save_commit;
+		private Microsoft.Office.Tools.Ribbon.RibbonButton btn_show_history;
+		private Microsoft.Office.Tools.Ribbon.RibbonButton btn_compare;
+		private Microsoft.Office.Tools.Ribbon.RibbonButton btn_autosave;
 	}
 
 	partial class ThisRibbonCollection

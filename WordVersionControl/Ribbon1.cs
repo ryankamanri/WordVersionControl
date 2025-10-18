@@ -5,16 +5,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Microsoft.Office.Interop.Word;
 using Microsoft.Office.Tools.Ribbon;
 
 namespace WordVersionControl
 {
 	public partial class Ribbon1
 	{
+		private GitOps git_ops;
 		private void Ribbon1_Load(object sender, RibbonUIEventArgs e)
 		{
-			
 		}
+
+
 
 		private void BtnSaveCommit_Click(object sender, RibbonControlEventArgs e)
 		{
