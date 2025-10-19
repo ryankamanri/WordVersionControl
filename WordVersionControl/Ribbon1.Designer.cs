@@ -42,7 +42,7 @@
 			this.group_commit = this.Factory.CreateRibbonGroup();
 			this.btn_save_commit = this.Factory.CreateRibbonButton();
 			this.group_autosave = this.Factory.CreateRibbonGroup();
-			this.btn_autosave = this.Factory.CreateRibbonButton();
+			this.btn_autosave = this.Factory.CreateRibbonToggleButton();
 			this.operation_tab.SuspendLayout();
 			this.group_history.SuspendLayout();
 			this.group_compare.SuspendLayout();
@@ -112,11 +112,13 @@
 			// 
 			// btn_autosave
 			// 
+			this.btn_autosave.Checked = true;
 			this.btn_autosave.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
 			this.btn_autosave.Image = global::WordVersionControl.Properties.Resources.扁平化立体线性多色APP网页按钮导航分类_爱给网_aigei_com__5___1_;
 			this.btn_autosave.Label = "自动保存";
 			this.btn_autosave.Name = "btn_autosave";
 			this.btn_autosave.ShowImage = true;
+			this.btn_autosave.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.BtnAutoSave_Click);
 			// 
 			// Ribbon1
 			// 
@@ -147,7 +149,7 @@
 		private Microsoft.Office.Tools.Ribbon.RibbonButton btn_save_commit;
 		private Microsoft.Office.Tools.Ribbon.RibbonButton btn_show_history;
 		private Microsoft.Office.Tools.Ribbon.RibbonButton btn_compare;
-		private Microsoft.Office.Tools.Ribbon.RibbonButton btn_autosave;
+		private Microsoft.Office.Tools.Ribbon.RibbonToggleButton btn_autosave;
 	}
 
 	partial class ThisRibbonCollection

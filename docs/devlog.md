@@ -1,4 +1,4 @@
-# Word版本控制VSIO插件 WordVersionControl(WVC) VSIO Plugin v0.1 开发文档
+# Word版本控制VSTO插件 WordVersionControl(WVC) VSTO Plugin v0.1 开发文档
 
 ## 1. 宗旨
 本插件旨在实现将基于git的版本控制系统接入以Microsoft Word为代表的Microsoft Office办公套件中, 实现较原生功能更加便捷可靠的版本管理. 
@@ -54,7 +54,11 @@
 
 ## 待实现功能
 
-1. 多分支切换/合并分支
+TODO: 
+1. 设计侧边栏 √已实现
+2. 定时保存 √已实现
+...
+3. 多分支切换/合并分支
 
 
 ## 架构设计

@@ -7,18 +7,19 @@ using System.Text;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
 using Microsoft.Office.Tools.Ribbon;
+using WordVersionControl.Models;
 
 namespace WordVersionControl
 {
 	public partial class Ribbon1
 	{
-		private GitOps git_ops;
 		private void Ribbon1_Load(object sender, RibbonUIEventArgs e)
 		{
 		}
 
 
 
+		#region button_events
 		private void BtnSaveCommit_Click(object sender, RibbonControlEventArgs e)
 		{
 			var doc = Globals.ThisAddIn.Application.ActiveDocument;
@@ -36,12 +37,46 @@ namespace WordVersionControl
 
 		private void BtnShowLog_Click(object sender, RibbonControlEventArgs e)
 		{
-			var doc = Globals.ThisAddIn.Application.ActiveDocument;
-			if (doc == null) { MessageBox.Show("未打开任何文档"); return; }
-			string dir = Path.GetDirectoryName(doc.FullName);
+			//var doc = Globals.ThisAddIn.Application.ActiveDocument;
+			//if (doc == null) { MessageBox.Show("未打开任何文档"); return; }
+			//string dir = Path.GetDirectoryName(doc.FullName);
 
-			string output = RunGit(dir, "log --oneline -n 10");
-			MessageBox.Show(output, "最近版本历史");
+			//string output = RunGit(dir, "log --oneline -n 10");
+			//MessageBox.Show(output, "最近版本历史");
+
+			var pane = Globals.ThisAddIn.repo_pane;
+			pane.Visible = !pane.Visible;
+
+			if (pane.Visible)
+			{
+				// 示例数据（你可以改成从 Git 获取）
+				List<Commit> commits = new List<Commit>
+				{
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!\nhello!"),
+					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo!"),
+				};
+				Globals.ThisAddIn.sidebar_control.SetCommits(commits);
+			}
 		}
 
 		private void BtnCompare_Click(object sender, RibbonControlEventArgs e)
@@ -66,6 +101,14 @@ namespace WordVersionControl
 			);
 		}
 
+		private void BtnAutoSave_Click(object sender, RibbonControlEventArgs e)
+		{
+			var button = (RibbonToggleButton)sender;
+			bool enabled = button.Checked;
+			Globals.ThisAddIn.autosave_service.Switch(enabled);
+		}
+
+		#endregion
 		private void EnsureGitRepo(string dir)
 		{
 			if (!Directory.Exists(Path.Combine(dir, ".git")))

@@ -15,13 +15,16 @@ namespace WordVersionControl
 	public class GitOps
 	{
 		private string repository_path;
+		private const string GIT_FORMAT_OUTPUT_SPLITER = "|||";
 		public GitOps(string repository_path) 
 		{
 			this.repository_path = repository_path;
 		}
 
-		public List<Commit> GetLog()
+		public IEnumerable<Commit> GetLog()
 		{
+			string git_format_output_str = $"log --format=\"%H|%an|%cI|%B\"";
+			//RunGit(repository_path, );
 			return default;
 		}
 
