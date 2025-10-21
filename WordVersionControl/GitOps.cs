@@ -14,27 +14,69 @@ namespace WordVersionControl
 {
 	public class GitOps
 	{
-		private string repository_path;
-		private const string GIT_FORMAT_OUTPUT_SPLITER = "|||";
+		public string repository_path { get; private set; }
+		public string tmp_path => Path.Combine(repository_path, ".tmp");
+		public const string STAGED_FILE_NAME = "__staged_version__.docx";
+		public const string FILENAME_FILE_NAME = "filename";
+		public List<Commit> commits { get; private set; }
 		public GitOps(string repository_path) 
 		{
 			this.repository_path = repository_path;
+
+			this.commits = new List<Commit>();
+			UpdateCommits();
 		}
 
-		public IEnumerable<Commit> GetLog()
+		public void UpdateCommits()
 		{
-			string git_format_output_str = $"log --format=\"%H|%an|%cI|%B\"";
-			//RunGit(repository_path, );
-			return default;
+			foreach (var commit in UpdatedCommits())
+			{
+				commits.Add(commit);
+			}
 		}
 
-		public void Export(Commit commit, string filename)
+		private IEnumerable<Commit> UpdatedCommits()
 		{
+			// check whether the repository is empty
+			if(RunGit(repository_path, "show-ref", false).Length == 0)
+			{
+				yield break;
+			}
+			//
+			string git_format_output_str = $"log --format=\"%H|%an|%cI\"";
+            foreach (var format_str in RunGit(repository_path, git_format_output_str).Split('\n'))
+            {
+				if (format_str.Length == 0) continue; 
+				var format_list = format_str.Split('|');
+				var message = RunGit(repository_path, $"show --format=\"%B\" {format_list[0]} -s");
+
+				yield return new Commit(
+					format_list[0], // commit_id
+					format_list[1], // author
+					DateTime.Parse(format_list[2]), // committer date, strict ISO 8601 format
+					message
+				);
+            }
+		}
+
+		public string Export(Commit commit, string filename)
+		{
+			var output_path = Path.Combine(tmp_path, filename);
+			try
+			{
+				ExportGitVersion(repository_path, $"{commit.commit_id}:\"{STAGED_FILE_NAME}\"", output_path);
+			} catch (Exception e) 
+			{ 
+				MessageBox.Show(e.StackTrace, e.Message);
+			}
 			
+			return output_path;
 		}
 
-		public void Commit(Commit commit, string message)
+		public void Commit(string message)
 		{
+			RunGit(repository_path, $"add {GitOps.STAGED_FILE_NAME} {GitOps.FILENAME_FILE_NAME}");
+			RunGit(repository_path, $"commit -m \"{message.Replace("\"", "\\\"")}\"");
 		}
 
 		public static string EnsureGitRepo(string wvc_path, Document doc)
@@ -47,6 +89,8 @@ namespace WordVersionControl
 				repo_sign = Guid.NewGuid().ToString("N");
 				repo_path = Path.Combine(wvc_path, repo_sign);
 				Directory.CreateDirectory(repo_path);
+				var tmp_path = Path.Combine(repo_path, ".tmp");
+				Directory.CreateDirectory(tmp_path);
 				RunGit(repo_path, "init");
 				Utils.SetRepoSignature(doc, repo_sign);
 
@@ -74,7 +118,7 @@ namespace WordVersionControl
 			return repo_path;
 		}
 
-		private static string RunGit(string dir, string args)
+		private static string RunGit(string dir, string args, bool show_message = true)
 		{
 			var psi = new ProcessStartInfo("git", args)
 			{
@@ -93,7 +137,8 @@ namespace WordVersionControl
 				string error = proc.StandardError.ReadToEnd();
 				if (proc.ExitCode != 0) 
 				{
-					MessageBox.Show(output + "\n" + error, "Git Error");
+					if (show_message) MessageBox.Show(output + "\n" + error, "Git Error");
+					return "";
 				}
 				return output;
 			}

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Microsoft.Office.Interop.Word;
+using Word = Microsoft.Office.Interop.Word;
 using Microsoft.Office.Tools.Ribbon;
 using WordVersionControl.Models;
 
@@ -18,149 +18,112 @@ namespace WordVersionControl
 		}
 
 
-
 		#region button_events
 		private void BtnSaveCommit_Click(object sender, RibbonControlEventArgs e)
 		{
+			if (!Globals.ThisAddIn.enabled) return;
 			var doc = Globals.ThisAddIn.Application.ActiveDocument;
 			if (doc == null) { MessageBox.Show("未打开任何文档"); return; }
+			var git_ops = Globals.ThisAddIn.git_ops;
 
-			string docPath = doc.FullName;
-			string dir = Path.GetDirectoryName(docPath);
-			doc.Save();
+			// save and copy to stage directory
+			if (!doc.Saved) doc.Save();
+			var doc_path = doc.FullName;
+			var staged_doc_path = Path.Combine(git_ops.repository_path, GitOps.STAGED_FILE_NAME);
+			doc.SaveAs2(staged_doc_path); // here doc change to staged_doc_path, we need to change it back later
 
-			EnsureGitRepo(dir);
-			RunGit(dir, $"add \"{Path.GetFileName(docPath)}\"");
-			RunGit(dir, $"commit -m \"Auto save {DateTime.Now:yyyy-MM-dd HH:mm:ss}\"");
-			MessageBox.Show("已提交到 Git");
+			// remove all revision
+			var staged_doc = doc.Application.Documents.Open(staged_doc_path, Visible: false);
+			staged_doc.RejectAllRevisions();
+			staged_doc.Close(SaveChanges: true);
+
+			// change doc to origin
+			doc = Globals.ThisAddIn.Application.Documents.Open(doc_path);
+
+			// preview changes
+			if (git_ops.commits.Count > 0)
+			{
+				var git_head_doc_name = "HEAD.docx";
+				var head_output_path = git_ops.Export(git_ops.commits[0], git_head_doc_name);
+				var app = new Word.Application();
+				app.Visible = true;
+
+				var old_doc = app.Documents.Open(head_output_path, ReadOnly: true, Visible: false);
+				var new_doc = app.Documents.Open(staged_doc_path, ReadOnly: true, Visible: false);
+
+				var compare_doc = app.CompareDocuments(
+					old_doc, new_doc,
+					Microsoft.Office.Interop.Word.WdCompareDestination.wdCompareDestinationNew
+				);
+
+				old_doc.Close();
+				new_doc.Close();
+			}
+
+			// save file name
+			using (var filename_file = System.IO.File.CreateText(Path.Combine(git_ops.repository_path, GitOps.FILENAME_FILE_NAME)))
+			{
+				filename_file.Write(doc.Name);
+			}
+
+			// write message & commit
+			using (var form = new CommitMessageForm())
+			{
+				if (form.ShowDialog() == DialogResult.OK)
+				{
+					string message = form.CommitMessage;
+					// commit to git
+					git_ops.Commit(message);
+				}
+			}
+
+			// update commit list
+			git_ops.UpdateCommits();
+
+			MessageBox.Show("提交操作已完成");
 		}
 
 		private void BtnShowLog_Click(object sender, RibbonControlEventArgs e)
 		{
-			//var doc = Globals.ThisAddIn.Application.ActiveDocument;
-			//if (doc == null) { MessageBox.Show("未打开任何文档"); return; }
-			//string dir = Path.GetDirectoryName(doc.FullName);
-
-			//string output = RunGit(dir, "log --oneline -n 10");
-			//MessageBox.Show(output, "最近版本历史");
-
-			var pane = Globals.ThisAddIn.repo_pane;
-			pane.Visible = !pane.Visible;
-
-			if (pane.Visible)
-			{
-				// 示例数据（你可以改成从 Git 获取）
-				List<Commit> commits = new List<Commit>
-				{
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hello!\nhello!"),
-					new Commit("4gsdf4tq", "ryan", DateTime.Now, "hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo!"),
-				};
-				Globals.ThisAddIn.sidebar_control.SetCommits(commits);
-			}
+			if (!Globals.ThisAddIn.enabled) return;
+			SwitchRepoPane();
+			var sidebar = Globals.ThisAddIn.sidebar_control;
+			sidebar.open_type = RepoSidebar.OpenType.SHOW_HISTORY;
 		}
 
 		private void BtnCompare_Click(object sender, RibbonControlEventArgs e)
 		{
-			var doc = Globals.ThisAddIn.Application.ActiveDocument;
-			if (doc == null) { MessageBox.Show("未打开任何文档"); return; }
-			string dir = Path.GetDirectoryName(doc.FullName);
-			string fileName = Path.GetFileName(doc.FullName);
-
-			// 提取最近两次提交的版本
-			string oldPath = Path.Combine(dir, "_old.docx");
-			string newPath = Path.Combine(dir, "_new.docx");
-			ExportGitVersion(dir, $"HEAD~1:\"{fileName}\"", oldPath);
-			ExportGitVersion(dir, $"HEAD:\"{fileName}\"", newPath);
-
-			// 调用 Word 的比较功能
-			var app = Globals.ThisAddIn.Application;
-			app.CompareDocuments(
-				app.Documents.Open(oldPath, ReadOnly: true),
-				app.Documents.Open(newPath, ReadOnly: true),
-				Microsoft.Office.Interop.Word.WdCompareDestination.wdCompareDestinationNew
-			);
+			if (!Globals.ThisAddIn.enabled) return;
+			SwitchRepoPane();
+			var sidebar = Globals.ThisAddIn.sidebar_control;
+			sidebar.open_type = RepoSidebar.OpenType.COMPARE_TWO;
 		}
 
 		private void BtnAutoSave_Click(object sender, RibbonControlEventArgs e)
 		{
+			if (!Globals.ThisAddIn.enabled) return;
 			var button = (RibbonToggleButton)sender;
 			bool enabled = button.Checked;
 			Globals.ThisAddIn.autosave_service.Switch(enabled);
 		}
 
 		#endregion
-		private void EnsureGitRepo(string dir)
-		{
-			if (!Directory.Exists(Path.Combine(dir, ".git")))
-				RunGit(dir, "init");
-		}
 
-		private string RunGit(string dir, string args)
+		private void SwitchRepoPane()
 		{
-			var psi = new ProcessStartInfo("git", args)
+			
+			var git_ops = Globals.ThisAddIn.git_ops;
+			var pane = Globals.ThisAddIn.repo_pane;
+			pane.Visible = !pane.Visible;
+
+			if (pane.Visible)
 			{
-				WorkingDirectory = dir,
-				RedirectStandardOutput = true,
-				RedirectStandardError = true,
-				UseShellExecute = false,
-				CreateNoWindow = true,
-				StandardOutputEncoding = Encoding.UTF8,
-				StandardErrorEncoding = Encoding.UTF8
-			};
-			using (var proc = Process.Start(psi))
-			{
-				string output = proc.StandardOutput.ReadToEnd() + proc.StandardError.ReadToEnd();
-				proc.WaitForExit();
-				return output;
+				// 示例数据（你可以改成从 Git 获取）
+				var commits = git_ops.commits;
+				Globals.ThisAddIn.sidebar_control.SetCommits(commits);
 			}
 		}
 
-		private void ExportGitVersion(string dir, string gitSpec, string outputPath)
-		{
-			var psi = new ProcessStartInfo("git", $"show {gitSpec}")
-			{
-				WorkingDirectory = dir,
-				RedirectStandardOutput = true,
-				RedirectStandardError = true,
-				UseShellExecute = false,
-				CreateNoWindow = true,
-				StandardOutputEncoding = Encoding.UTF8
-			};
 
-			using (var proc = Process.Start(psi))
-			{
-				using (var fs = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
-				{
-					proc.StandardOutput.BaseStream.CopyTo(fs);
-				}
-				proc.WaitForExit();
-
-				if (proc.ExitCode != 0)
-				{
-					string err = proc.StandardError.ReadToEnd();
-					throw new Exception($"Git show 失败: {err}");
-				}
-			}
-		}
 	}
 }

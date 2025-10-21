@@ -13,6 +13,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static WordVersionControl.RepoSidebar;
 
 namespace WordVersionControl
 {
@@ -21,6 +22,16 @@ namespace WordVersionControl
 	/// </summary>
 	public partial class RepoSidebar : System.Windows.Controls.UserControl
 	{
+		public enum OpenType
+		{
+			SHOW_HISTORY, 
+			COMPARE_TWO
+		}
+
+		public OpenType open_type = OpenType.SHOW_HISTORY;
+		public List<Models.Commit> compare_pool = new List<Models.Commit>();
+
+		public Action<OpenType, List<Models.Commit>> OnEvent { get; set; }
 		public RepoSidebar()
 		{
 			InitializeComponent();
@@ -45,7 +56,20 @@ namespace WordVersionControl
 		{
 			if (CommitList.SelectedItem is Models.Commit commit)
 			{
-				MessageBox.Show($"{commit.commit_id} selected!");
+				compare_pool.Add(commit);
+				if (open_type == OpenType.SHOW_HISTORY)
+				{
+					OnEvent?.Invoke(open_type, compare_pool);
+				}
+				if (open_type == OpenType.COMPARE_TWO)
+				{
+					if (compare_pool.Count < 2)
+					{
+						return;
+					}
+					OnEvent?.Invoke(open_type, compare_pool);
+				}
+				compare_pool.Clear();
 			}
 		}
 	}
@@ -53,6 +77,18 @@ namespace WordVersionControl
 	public partial class RepoSidebarHost : System.Windows.Forms.UserControl
 	{
 		private ElementHost host;
+		private RepoSidebar bar;
+
+		public RepoSidebar.OpenType open_type
+		{
+			get => bar.open_type;
+			set => bar.open_type = value;
+		}
+
+		public Action<OpenType, List<Models.Commit>> OnEvent 
+		{ 
+			set => bar.OnEvent = value;
+		}
 
 		public RepoSidebarHost()
 		{
@@ -80,7 +116,8 @@ namespace WordVersionControl
 
 		private void InitializeElementHost()
 		{
-			host.Child = new RepoSidebar();
+			bar = new RepoSidebar();
+			host.Child = bar;
 		}
 
 		// 可选：暴露方法给外部，便于在 ThisAddIn 中调用

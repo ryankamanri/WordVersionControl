@@ -191,6 +191,12 @@
   -->
   <ItemGroup>
     <Compile Include="AutosaveService.cs" />
+    <Compile Include="CommitMessageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CommitMessageForm.Designer.cs">
+      <DependentUpon>CommitMessageForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GitOps.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -200,6 +206,9 @@
       <DependentUpon>RepoSidebar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils.cs" />
+    <EmbeddedResource Include="CommitMessageForm.resx">
+      <DependentUpon>CommitMessageForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

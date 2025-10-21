@@ -11,6 +11,7 @@
 			: base(Globals.Factory.GetRibbonFactory())
 		{
 			InitializeComponent();
+			this.Load += Ribbon1_Load;
 		}
 
 		/// <summary> 

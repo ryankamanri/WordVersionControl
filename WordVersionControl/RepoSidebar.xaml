@@ -33,7 +33,7 @@
 									<ColumnDefinition Width="*" />
 									<ColumnDefinition Width="Auto" />
 								</Grid.ColumnDefinitions>
-								<TextBlock Text="{Binding commit_id}"
+								<TextBlock Text="{Binding abbr_commit_id}"
                                            FontWeight="Bold"
                                            Foreground="#333"
                                            VerticalAlignment="Center"/>

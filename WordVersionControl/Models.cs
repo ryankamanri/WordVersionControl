@@ -18,6 +18,7 @@ namespace WordVersionControl
 				MESSAGE
 			}
 			public string commit_id { get; }
+			public string abbr_commit_id => commit_id.Substring(0, 7);
 			public string author {  get; }
 			public DateTime date { get; }
 			public string message { get; }
@@ -28,6 +29,17 @@ namespace WordVersionControl
 				this.author = author;
 				this.date = date;
 				this.message = message;
+			}
+
+			public override string ToString() 
+			{
+				return 
+				$"=================================\n" +
+				$"提交id:	{commit_id}\n" +
+				$"作者:	{author}\n" +
+				$"日期:	{date}\n" +
+				$"提交消息:\n{message}\n" +
+				$"=================================\n";
 			}
 		}
 	}

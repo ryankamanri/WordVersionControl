@@ -10,7 +10,7 @@ namespace WordVersionControl
 {
 	public class AutosaveService
 	{
-		private bool enabled = true;
+		private bool enabled = false;
 		private Timer autosave_timer;
 		private Document document;
 		public AutosaveService(Document document, double interval = 5000) 
